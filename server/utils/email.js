@@ -28,8 +28,9 @@ try {
 }
 
 export const sendInviteEmail = async (email, taskTitle, inviteUrl) => {
+  const mailSender = process.env.SMTP_FROM || process.env.SMTP_USER || process.env.EMAIL_USER || '"TaskPilot" <noreply@taskpilot.io>';
   const mailOptions = {
-    from: process.env.SMTP_FROM || '"TaskPilot" <noreply@taskpilot.io>',
+    from: mailSender,
     to: email,
     subject: `Invitation to complete task: ${taskTitle}`,
     html: `
