@@ -5,6 +5,11 @@ import { Server } from 'socket.io';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Import Routers
 import authRouter from './routes/auth.js';
@@ -36,6 +41,17 @@ app.use('/api/team', teamRouter);
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'healthy', database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected' });
+});
+
+// Serve compiled static frontend assets in production
+app.use(express.static(path.join(__dirname, '../client/dist')));
+
+// Fallback all non-API wildcard routes to index.html
+app.get('*', (req, res, next) => {
+  if (req.url.startsWith('/api') || req.url.startsWith('/health')) {
+    return next();
+  }
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
 
 // Socket.io Real-Time Typing Sync

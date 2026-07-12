@@ -1,0 +1,13 @@
+{
+  "name": "taskpilot-monolith",
+  "version": "1.0.0",
+  "description": "TaskPilot Unified Assessment Monolith Platform",
+  "main": "server/index.js",
+  "scripts": {
+    "install-all": "npm install && cd client && npm install && cd ../server && npm install",
+    "build-client": "cd client && npm run build",
+    "build": "npm run install-all && npm run build-client",
+    "start": "cd server && npm start"
+  },
+  "dependencies": {}
+}
