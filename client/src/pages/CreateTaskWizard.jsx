@@ -107,7 +107,9 @@ const CreateTaskWizard = () => {
       navigate('/admin/dashboard');
     } catch (error) {
       console.error('Wizard save error:', error);
-      toast.error(error.response?.data?.message || 'Failed to create task wizard.');
+      const serverError = error.response?.data?.error;
+      const serverMsg = error.response?.data?.message;
+      toast.error(serverError || serverMsg || 'Failed to create task wizard.');
     } finally {
       setLoading(false);
     }
