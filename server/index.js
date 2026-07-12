@@ -7,7 +7,7 @@ import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import path from 'path';
 import { fileURLToPath } from 'url';
-
+import fs from 'fs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -41,6 +41,17 @@ app.use('/api/team', teamRouter);
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'healthy', database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected' });
+});
+
+app.get('/diag-static', (req, res) => {
+  const targetDir = path.join(__dirname, '../client/dist');
+  try {
+    const files = fs.readdirSync(targetDir);
+    const assets = fs.readdirSync(path.join(targetDir, 'assets'));
+    res.json({ targetDir, files, assets });
+  } catch (err) {
+    res.status(500).json({ error: err.message, targetDir });
+  }
 });
 
 // Serve compiled static frontend assets in production
