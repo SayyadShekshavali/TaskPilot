@@ -85,7 +85,7 @@ router.post('/', verifyToken, requireAdmin, async (req, res) => {
         createdSubmissions.push(submission);
 
         // Send Email
-        let origin = 'http://localhost:5173';
+        let origin = process.env.CLIENT_URL || 'http://localhost:5173';
         if (req.headers.referer) {
           try {
             origin = new URL(req.headers.referer).origin;
