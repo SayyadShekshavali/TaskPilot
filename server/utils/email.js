@@ -16,7 +16,9 @@ try {
       auth: {
         user: smtpUser,
         pass: smtpPass
-      }
+      },
+      connectionTimeout: 5000,
+      greetingTimeout: 5000
     });
   } else {
     console.warn('SMTP credentials not fully configured. Using mock console mailer.');

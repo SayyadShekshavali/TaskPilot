@@ -93,8 +93,9 @@ router.post('/', verifyToken, requireAdmin, async (req, res) => {
             // fallback
           }
         }
-        const inviteUrl = `${origin}/invite/${accessToken}`;
-        await sendInviteEmail(cleanEmail, title, inviteUrl);
+        sendInviteEmail(cleanEmail, title, inviteUrl).catch(err => {
+          console.error(`Background email invite failed for ${cleanEmail}:`, err);
+        });
       }
     }
 
