@@ -102,7 +102,11 @@ router.post('/', verifyToken, requireAdmin, async (req, res) => {
     return res.status(201).json({ task, submissions: createdSubmissions });
   } catch (error) {
     console.error('Create Task Error:', error);
-    return res.status(500).json({ message: 'Internal server error while creating task.' });
+    return res.status(500).json({ 
+      message: 'Internal server error while creating task.', 
+      error: error.message,
+      stack: error.stack
+    });
   }
 });
 
