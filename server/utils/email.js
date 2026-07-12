@@ -9,17 +9,31 @@ try {
   const smtpPass = process.env.SMTP_PASS || process.env.EMAIL_PASS;
 
   if (smtpHost && smtpUser && smtpPass) {
-    transporter = nodemailer.createTransport({
-      host: smtpHost,
-      port: smtpPort,
-      secure: smtpPort === 465, // true for 465, false for other ports
-      auth: {
-        user: smtpUser,
-        pass: smtpPass
-      },
-      connectionTimeout: 5000,
-      greetingTimeout: 5000
-    });
+    const isGmail = smtpHost.includes('gmail') || smtpUser.endsWith('@gmail.com');
+    
+    if (isGmail) {
+      transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: smtpUser,
+          pass: smtpPass
+        },
+        connectionTimeout: 5000,
+        greetingTimeout: 5000
+      });
+    } else {
+      transporter = nodemailer.createTransport({
+        host: smtpHost,
+        port: smtpPort,
+        secure: smtpPort === 465, // true for 465, false for other ports
+        auth: {
+          user: smtpUser,
+          pass: smtpPass
+        },
+        connectionTimeout: 5000,
+        greetingTimeout: 5000
+      });
+    }
   } else {
     console.warn('SMTP credentials not fully configured. Using mock console mailer.');
   }
