@@ -43,27 +43,25 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'healthy', database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected' });
 });
 
-app.get('/diag-static', (req, res) => {
-  const targetDir = path.join(__dirname, '../client/dist');
-  try {
-    const files = fs.readdirSync(targetDir);
-    const assets = fs.readdirSync(path.join(targetDir, 'assets'));
-    res.json({ targetDir, files, assets });
-  } catch (err) {
-    res.status(500).json({ error: err.message, targetDir });
-  }
-});
-
-// Serve compiled static frontend assets in production
-app.use(express.static(path.join(__dirname, '../client/dist')));
-
-// Fallback all non-API wildcard routes to index.html
-app.get('*', (req, res, next) => {
-  if (req.url.startsWith('/api') || req.url.startsWith('/health')) {
-    return next();
-  }
-  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
-});
+// Serve compiled static frontend assets in production (Monolith fallback)
+const staticPath = path.join(__dirname, '../client/dist');
+if (fs.existsSync(staticPath)) {
+  app.use(express.static(staticPath));
+  app.get('*', (req, res, next) => {
+    if (req.url.startsWith('/api') || req.url.startsWith('/health')) {
+      return next();
+    }
+    res.sendFile(path.join(staticPath, 'index.html'));
+  });
+} else {
+  // Split Deployment fallback: serve API status on root / path
+  app.get('/', (req, res) => {
+    res.json({
+      status: 'active',
+      message: 'TaskPilot Express API Server is running. Frontend is deployed separately.'
+    });
+  });
+}
 
 // Socket.io Real-Time Typing Sync
 io.on('connection', (socket) => {
