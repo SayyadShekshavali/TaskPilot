@@ -54,9 +54,10 @@ const LiveMonitoring = () => {
     fetchSubmissions();
 
     // Setup Socket.io listening for updates
-    const socketHost = window.location.origin.includes('5173')
+    const apiBase = import.meta.env.VITE_API_URL || '';
+    const socketHost = apiBase || (window.location.origin.includes('5173')
       ? 'http://localhost:5000'
-      : window.location.origin;
+      : window.location.origin);
     
     const socket = io(socketHost);
 
